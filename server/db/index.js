@@ -46,8 +46,13 @@ const Genre = dbConnection.define("genre", {
 	},
 });
 
-Movie.belongsToMany(Genre, {through: 'movies_genres'});
-Genre.belongsToMany(Movie, {through: 'movies_genres'}); 
+//ASSOCIATIONS
+Movie.belongsToMany(Genre, { through: "movies_genres" });
+Genre.belongsToMany(Movie, { through: "movies_genres" });
 
-//EXPORT THE CONNECTION
-module.exports = dbConnection;
+//EXPORT THE CONNECTION & MODELS
+module.exports = {
+	dbConnection: dbConnection,
+	Movie: Movie,
+	Genre: Genre,
+};
