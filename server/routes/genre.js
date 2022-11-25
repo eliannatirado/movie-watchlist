@@ -7,18 +7,20 @@ router.get("/", (req, res) => {
 	res.send(`
     <!DOCTYPE html>
     <html>
-        <head><title>Add a new Genre</title></head>
+        <head>
+            <title>Add a new Genre</title>
+        </head>
         <body>
-        <h1>Add new Genre</h1>
-        <form method="POST" action="/genre">
-        <div>
-        <label>Name:</label>
-        <input type="text" name="theName" />
-        <button type="submit">Add Genre</button>
-        </div>
-        </form>
+            <h1>Add new Genre</h1>
+            <form method="POST" action="/genre">
+                <div>
+                    <label>Name:</label>
+                    <input type="text" name="theName" />
+                    <button type="submit">Add Genre</button>
+                </div>
+            </form>
         </body>
-        </html>
+    </html>
     `);
 });
 
