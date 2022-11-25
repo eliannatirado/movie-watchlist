@@ -3,8 +3,43 @@ const router = express.Router();
 const { Movie, Genre } = require("../db"); //require('../db') is an object so {Genre} is destructuring the object the same as require('../db').Genre
 
 //GET /movies shows a movie list
-router.get("/", (req, res) => {
-	res.send("movie list will go here");
+router.get("/", async (req, res, next) => {
+	try {
+		const movies = await Movie.findAll({
+			include: [Genre],
+            order: [
+                ["title", "ASC"]
+            ]
+		});
+		res.send(
+            `   <!DOCTYPE html>
+            <html>
+                <head>
+                    <title>Movie List</title>
+                </head>
+                <body>
+                    <h1>Movie List</h1>
+                    <ul>
+                    ${movies.map((movie) => {
+                        return `
+                        <li>
+                            <h2>${movie.title}</h2>
+                            ${movie.imdbLink ? `<a target="_blank" href="${movie.imdbLink}">IMDB</a>` : ""}
+                            <ul>
+                                ${movie.genres.map(genre => {
+                                    return `<li>${genre.name}</li>`;
+                                }).join("")}
+                                </ul>
+                        </li>
+                        `
+                    }).join("")}
+                    </ul>
+                </body>
+            </html>`
+        );
+	} catch (e) {
+		next(e);
+	}
 });
 
 //GET /movies/add-movie
