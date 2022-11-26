@@ -7,36 +7,48 @@ router.get("/", async (req, res, next) => {
 	try {
 		const movies = await Movie.findAll({
 			include: [Genre],
-            order: [
-                ["title", "ASC"]
-            ]
+			order: [["title", "ASC"]],
 		});
 		res.send(
-            `   <!DOCTYPE html>
+			`   <!DOCTYPE html>
             <html>
                 <head>
                     <title>Movie List</title>
+                    <link rel="stylesheet" type="text/css" href="/movie-list-style.css" />
                 </head>
                 <body>
                     <h1>Movie List</h1>
                     <ul>
-                    ${movies.map((movie) => {
-                        return `
-                        <li>
+                    ${movies
+											.map((movie) => {
+												return `
+                        <li class="${movie.watched === true ? "watched" : ""}">
                             <h2>${movie.title}</h2>
-                            ${movie.imdbLink ? `<a target="_blank" href="${movie.imdbLink}">IMDB</a>` : ""}
+                            ${
+															movie.imdbLink
+																? `<a target="_blank" href="${movie.imdbLink}">IMDB</a>`
+																: ""
+														}
                             <ul>
-                                ${movie.genres.map(genre => {
-                                    return `<li>${genre.name}</li>`;
-                                }).join("")}
+                                ${movie.genres
+																	.map((genre) => {
+																		return `<li>${genre.name}</li>`;
+																	})
+																	.join("")}
                                 </ul>
+                                ${
+																	movie.watched === false
+																		? `<a href="/movies/${movie.id}/mark-watched">I watched this!</a>`
+																		: ""
+																}
                         </li>
-                        `
-                    }).join("")}
+                        `;
+											})
+											.join("")}
                     </ul>
                 </body>
             </html>`
-        );
+		);
 	} catch (e) {
 		next(e);
 	}
@@ -80,6 +92,28 @@ router.get("/add-movie", async (req, res) => {
             <script type="text/javascript" src="/movie-form.js"></script>
         </body>
     </html>`);
+});
+
+//TODO: not really sure how this works..
+//route that updates the movie to <watched> when you click the <I watched this!> button
+router.get("/:movieId/mark-watched", async (req, res, next) => {
+	const id = req.params.movieId;
+
+	try {
+		const theMovie = await Movie.findByPk(id);
+
+		if (!theMovie) {
+			res.status(404).send("There is no movie with that ID");
+		}
+         
+        theMovie.watched = true; //this only updates the object that represents the database 
+        await theMovie.save(); //this is what actually saves it in the database
+
+        res.redirect("/movies");
+
+	} catch (e) {
+		next(e);
+	}
 });
 
 //POST /movies
